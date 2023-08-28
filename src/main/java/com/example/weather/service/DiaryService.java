@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -41,8 +42,11 @@ public class DiaryService {
         nowDiary.setText(text);
         nowDiary.setDate(date);
 
-        Diary save = diaryRepository.save(nowDiary);
+        diaryRepository.save(nowDiary);
+    }
 
+    public List<Diary> readDiary(LocalDate date) {
+        return diaryRepository.findAllByDate(date);
     }
 
     private String getWeatherString() {
@@ -98,4 +102,6 @@ public class DiaryService {
 
         return resultMap;
     }
+
+
 }
