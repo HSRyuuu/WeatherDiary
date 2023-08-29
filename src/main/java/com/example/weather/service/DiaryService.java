@@ -9,6 +9,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class DiaryService {
     @Value("${openweathermap.key}")
@@ -27,6 +30,7 @@ public class DiaryService {
 
     private final DiaryRepository diaryRepository;
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createDiary(LocalDate date, String text) {
         // open weather map 에서 날씨 데이터 가져오기
         String weatherData = getWeatherString();
@@ -45,10 +49,12 @@ public class DiaryService {
         diaryRepository.save(nowDiary);
     }
 
+    @Transactional(readOnly = true)
     public List<Diary> readDiary(LocalDate date) {
         return diaryRepository.findAllByDate(date);
     }
 
+    @Transactional(readOnly = true)
     public List<Diary> readDiaries(LocalDate startDate, LocalDate endDate) {
         return diaryRepository.findAllByDateBetween(startDate, endDate);
     }
@@ -59,7 +65,7 @@ public class DiaryService {
         diaryRepository.save(nowDiary);
     }
 
-    public void deleteDiary(LocalDate date){
+    public void deleteDiary(LocalDate date) {
         diaryRepository.deleteAllByDate(date);
     }
 
@@ -109,14 +115,13 @@ public class DiaryService {
         JSONObject mainData = (JSONObject) jsonObject.get("main");
         resultMap.put("temp", mainData.get("temp"));
 
-        JSONArray weatherArray = (JSONArray)jsonObject.get("weather");
+        JSONArray weatherArray = (JSONArray) jsonObject.get("weather");
         JSONObject weatherData = (JSONObject) weatherArray.get(0);
         resultMap.put("main", weatherData.get("main"));
         resultMap.put("icon", weatherData.get("icon"));
 
         return resultMap;
     }
-
 
 
 }
