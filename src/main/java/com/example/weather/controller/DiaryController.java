@@ -2,6 +2,7 @@ package com.example.weather.controller;
 
 import com.example.weather.domain.Diary;
 import com.example.weather.service.DiaryService;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class DiaryController {
     @ApiOperation("일기 데이터 업데이트")
     @PutMapping("/update/diary")
     void updateDiary(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                     @RequestBody String text){
+                     @RequestBody @ApiParam(value = "일기 내용") String text){
         diaryService.updateDiary(date, text);
     }
 
